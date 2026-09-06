@@ -1,20 +1,20 @@
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration
 name = "Everyday Loyalty"
 client_id = "db0bb2ead14e514358b2f2174b9d65c3"
-application_url = "https://sewing-descending-sophisticated-remained.trycloudflare.com"
+application_url = "https://www.myapph.site"
 embedded = true
 
 [build]
-automatically_update_urls_on_dev = true
+automatically_update_urls_on_dev = false
 
 [access_scopes]
 scopes = "read_orders,write_discounts,read_discounts,read_customers,write_customers"
 
 [auth]
 redirect_urls = [
-  "https://sewing-descending-sophisticated-remained.trycloudflare.com/auth/callback",
-  "https://sewing-descending-sophisticated-remained.trycloudflare.com/auth/shopify/callback",
-  "https://sewing-descending-sophisticated-remained.trycloudflare.com/api/auth/callback"
+  "https://www.myapph.site/auth/callback",
+  "https://www.myapph.site/auth/shopify/callback",
+  "https://www.myapph.site/api/auth/callback"
 ]
 
 [webhooks]
