@@ -1,0 +1,19 @@
+{
+  "name": "Everyday Loyalty",
+  "settings": {
+    "enabled": {
+      "name": "Enable loyalty launcher"
+    },
+    "position": {
+      "name": "Launcher position",
+      "options__bottom-right__label": "Bottom right",
+      "options__bottom-left__label": "Bottom left"
+    },
+    "accent": {
+      "name": "Accent color"
+    },
+    "launcher_label": {
+      "name": "Launcher label"
+    }
+  }
+}

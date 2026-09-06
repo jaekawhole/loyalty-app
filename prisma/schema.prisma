@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
+}
+
+model Session {
+  id                    String    @id
+  shop                  String
+  state                 String
+  isOnline              Boolean   @default(false)
+  scope                 String?
+  expires               DateTime?
+  accessToken           String
+  userId                BigInt?
+  firstName             String?
+  lastName              String?
+  email                 String?
+  accountOwner          Boolean   @default(false)
+  locale                String?
+  collaborator          Boolean?  @default(false)
+  emailVerified         Boolean?  @default(false)
+  refreshToken          String?
+  refreshTokenExpires   DateTime?
+}
+
+/// Per-shop loyalty program settings (multi-tenant ready)
+model ShopSettings {
+  id                    String   @id @default(cuid())
+  shop                  String   @unique
+  programName           String   @default("Fidélité")
+  pointsCurrencyName    String   @default("points")
+  /// Shop money unit → points (default: €1 = 1 point)
+  earnPointsPerDollar   Float    @default(1)
+  /// Points required for 1 currency unit off (default: 20 → 100 pts = €5)
+  redeemPointsPerDollar Float    @default(20)
+  /// Default redemption offer size in shop currency
+  defaultRedeemAmount   Float    @default(5)
+  currencyCode          String   @default("EUR")
+  currencySymbol        String   @default("€")
+  /// Storefront panel language (fr for French store)
+  storefrontLocale      String   @default("fr")
+  /// Admin CRM language (zh-CN or en)
+  adminLocale           String   @default("zh-CN")
+  programActive         Boolean  @default(true)
+  includeShipping       Boolean  @default(false)
+  includeTaxes          Boolean  @default(false)
+  discountCodePrefix    String   @default("FIDELITE")
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+/// Customer points balance, scoped by shop
+model CustomerPoints {
+  id              String   @id @default(cuid())
+  shop            String
+  shopifyCustomerId String
+  email           String?
+  displayName     String?
+  balance         Int      @default(0)
+  lifetimeEarned  Int      @default(0)
+  lifetimeRedeemed Int     @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  ledger          PointsLedger[]
+  redemptions     Redemption[]
+
+  @@unique([shop, shopifyCustomerId])
+  @@index([shop, email])
+  @@index([shop, balance])
+}
+
+/// Immutable points ledger (Smile-style activity feed)
+model PointsLedger {
+  id                String   @id @default(cuid())
+  shop              String
+  customerPointsId  String
+  /// EARN | REDEEM | ADJUST | REFUND
+  type              String
+  points            Int
+  balanceAfter      Int
+  description       String?
+  /// Shopify order GID or numeric id for idempotency
+  orderId           String?
+  orderName         String?
+  metadata          String?
+  createdAt         DateTime @default(now())
+
+  customer          CustomerPoints @relation(fields: [customerPointsId], references: [id], onDelete: Cascade)
+
+  @@unique([shop, orderId, type])
+  @@index([shop, createdAt])
+  @@index([customerPointsId, createdAt])
+}
+
+/// Discount codes issued from point redemptions
+model Redemption {
+  id                String   @id @default(cuid())
+  shop              String
+  customerPointsId  String
+  pointsSpent       Int
+  discountAmount    Float
+  discountCode      String
+  discountGid       String?
+  status            String   @default("issued")
+  createdAt         DateTime @default(now())
+
+  customer          CustomerPoints @relation(fields: [customerPointsId], references: [id], onDelete: Cascade)
+
+  @@index([shop, createdAt])
+  @@index([discountCode])
+}

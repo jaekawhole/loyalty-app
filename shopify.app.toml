@@ -1,0 +1,45 @@
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration
+name = "Everyday Loyalty"
+client_id = "db0bb2ead14e514358b2f2174b9d65c3"
+application_url = "https://sewing-descending-sophisticated-remained.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+
+[access_scopes]
+scopes = "read_orders,write_discounts,read_discounts,read_customers,write_customers"
+
+[auth]
+redirect_urls = [
+  "https://sewing-descending-sophisticated-remained.trycloudflare.com/auth/callback",
+  "https://sewing-descending-sophisticated-remained.trycloudflare.com/auth/shopify/callback",
+  "https://sewing-descending-sophisticated-remained.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2025-10"
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/uninstalled"
+  topics = ["app/uninstalled"]
+
+  [[webhooks.subscriptions]]
+  topics = ["app/scopes_update"]
+  uri = "/webhooks/app/scopes_update"
+
+  # orders/paid + refunds/create require Protected Customer Data access.
+  # Enable in Dev Dashboard → App → API access → Protected customer data,
+  # then uncomment below and redeploy.
+  # [[webhooks.subscriptions]]
+  # topics = ["orders/paid"]
+  # uri = "/webhooks/orders/paid"
+  #
+  # [[webhooks.subscriptions]]
+  # topics = ["refunds/create"]
+  # uri = "/webhooks/refunds/create"
+
+[app_proxy]
+url = "/proxy"
+subpath = "loyalty"
+prefix = "apps"

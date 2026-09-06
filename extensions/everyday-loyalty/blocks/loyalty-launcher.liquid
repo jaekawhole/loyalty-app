@@ -1,0 +1,58 @@
+{% comment %}
+  Everyday Loyalty — Smile-inspired launcher + rewards panel (app embed)
+{% endcomment %}
+{% schema %}
+{
+  "name": "Everyday Loyalty launcher",
+  "target": "body",
+  "stylesheet": "loyalty.css",
+  "javascript": "loyalty.js",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enabled",
+      "label": "Enable loyalty launcher",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Launcher position",
+      "options": [
+        { "value": "bottom-right", "label": "Bottom right" },
+        { "value": "bottom-left", "label": "Bottom left" }
+      ],
+      "default": "bottom-right"
+    },
+    {
+      "type": "color",
+      "id": "accent",
+      "label": "Accent color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "text",
+      "id": "launcher_label",
+      "label": "Launcher label",
+      "default": "Fidélité"
+    }
+  ]
+}
+{% endschema %}
+
+{% comment %}
+  Only mount for logged-in customers. JS then checks the app proxy:
+  visible only after the customer has earned points from a paid order.
+{% endcomment %}
+{% if block.settings.enabled and customer %}
+  <div
+    id="everyday-loyalty-root"
+    data-position="{{ block.settings.position }}"
+    data-accent="{{ block.settings.accent }}"
+    data-label="{{ block.settings.launcher_label | escape }}"
+    data-proxy="/apps/loyalty"
+    data-logged-in="true"
+    data-customer-id="{{ customer.id }}"
+    hidden
+  ></div>
+{% endif %}
